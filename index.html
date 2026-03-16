@@ -59,6 +59,7 @@ a:hover{color:var(--gold-light)}
 .input-group input{flex:1;min-width:0;padding:14px 18px;font-size:16px;font-family:var(--font-body);background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--white);outline:none;transition:border-color .2s,box-shadow .2s}
 .input-group input::placeholder{color:var(--text-dim)}
 .input-group input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-glow)}
+.input-group input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
 /* Gold button */
 .btn-gold{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;font-size:16px;font-weight:600;font-family:var(--font-body);color:#0a0a0a;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:var(--radius-sm);cursor:pointer;transition:transform .15s,box-shadow .2s;white-space:nowrap}
@@ -68,12 +69,21 @@ a:hover{color:var(--gold-light)}
 .btn-gold:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
 /* Cards */
-.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;margin-bottom:24px}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;margin-bottom:24px;position:relative;overflow:hidden;transition:border-color .2s}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent)}
 .card:hover{border-color:var(--border-hover)}
+.card-accent{border-color:rgba(201,168,76,.2);box-shadow:0 0 40px var(--gold-glow),inset 0 1px 0 rgba(201,168,76,.1)}
+
+/* Section fade-in */
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 /* Scan section */
 #scan-section{display:none}
-#scan-section.visible{display:block}
+#scan-section.visible{display:block;animation:fadeSlideIn .4s ease-out}
+
+/* Progress bar */
+.scan-progress{height:3px;background:var(--bg-elevated);border-radius:2px;margin-top:20px;overflow:hidden}
+.scan-progress-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:2px;transition:width .4s ease-out;width:0%}
 .scan-header{text-align:center;margin-bottom:28px}
 .scan-header h2{font-size:22px;margin-bottom:4px}
 .scan-header p{color:var(--text-muted);font-size:14px;word-break:break-all}
@@ -90,8 +100,10 @@ a:hover{color:var(--gold-light)}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* Grade display */
+@keyframes gradeReveal{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
 #grade-section{display:none;text-align:center}
-#grade-section.visible{display:block}
+#grade-section.visible{display:block;animation:fadeSlideIn .4s ease-out}
+#grade-section.visible .grade-circle{animation:gradeReveal .5s cubic-bezier(.34,1.56,.64,1) .1s both}
 .grade-circle{width:140px;height:140px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:var(--font-heading);font-size:52px;font-weight:700;border:4px solid}
 .grade-circle.grade-green{color:var(--green);border-color:var(--green);background:var(--green-bg)}
 .grade-circle.grade-gold{color:var(--gold);border-color:var(--gold);background:var(--gold-glow)}
@@ -106,7 +118,7 @@ a:hover{color:var(--gold-light)}
 
 /* Email gate */
 #email-section{display:none}
-#email-section.visible{display:block}
+#email-section.visible{display:block;animation:fadeSlideIn .4s ease-out}
 .email-gate{text-align:center}
 .email-gate h2{font-size:24px;margin-bottom:8px}
 .email-gate p{color:var(--text-muted);margin-bottom:24px;font-size:15px}
@@ -115,7 +127,12 @@ a:hover{color:var(--gold-light)}
 
 /* Full report */
 #report-section{display:none}
-#report-section.visible{display:block}
+#report-section.visible{display:block;animation:fadeSlideIn .4s ease-out}
+
+/* Scan again */
+.scan-again{display:inline-flex;align-items:center;gap:6px;margin-top:24px;padding:10px 24px;font-size:14px;font-weight:600;font-family:var(--font-body);color:var(--gold);background:transparent;border:1px solid rgba(201,168,76,.3);border-radius:var(--radius-xs);cursor:pointer;transition:all .2s}
+.scan-again:hover{background:var(--gold-glow);border-color:var(--gold)}
+.scan-again:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .report-header{text-align:center;margin-bottom:28px}
 .report-header h2{font-size:24px;margin-bottom:4px}
 .report-item{padding:20px;margin-bottom:12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg-elevated)}
@@ -150,6 +167,8 @@ a:hover{color:var(--gold-light)}
 @media(prefers-reduced-motion:reduce){
 .check-icon.pending .spinner{animation:none;opacity:.5}
 @keyframes pulse-dot{0%,100%{opacity:1}}
+@keyframes fadeSlideIn{from{opacity:1;transform:none}to{opacity:1;transform:none}}
+@keyframes gradeReveal{from{opacity:1;transform:none}to{opacity:1;transform:none}}
 html{scroll-behavior:auto}
 }
 
@@ -195,6 +214,7 @@ html{scroll-behavior:auto}
         <div class="spinner" aria-hidden="true"></div>
         <span>Finalizing results...</span>
       </div>
+      <div class="scan-progress" id="scan-progress"><div class="scan-progress-bar" id="scan-progress-bar"></div></div>
       <div class="error-msg" id="error-msg" role="alert">Something went wrong — please try again.</div>
     </div>
   </section>
@@ -213,7 +233,7 @@ html{scroll-behavior:auto}
 
   <!-- Email gate -->
   <section id="email-section" aria-live="polite">
-    <div class="card email-gate">
+    <div class="card card-accent email-gate">
       <h2>Unlock Your Full Report</h2>
       <p>See all 11 checks with fix recommendations — sent to your inbox.</p>
       <form id="email-form" class="input-group" role="form" aria-label="Email for full report">
@@ -232,6 +252,9 @@ html{scroll-behavior:auto}
       <p style="color:var(--text-muted);font-size:14px" id="report-url"></p>
     </div>
     <div id="report-list"></div>
+    <div style="text-align:center;margin-top:32px">
+      <button class="scan-again" id="scan-again-btn" onclick="resetScan()">Scan Another Website</button>
+    </div>
   </section>
 </main>
 
@@ -377,6 +400,10 @@ html{scroll-behavior:auto}
       })
       .catch(() => { apiResult = null; });
 
+    // Progress bar
+    const progressBar = $('#scan-progress-bar');
+    if (progressBar) progressBar.style.width = '0%';
+
     // Animate checks one by one (stagger 1.2s)
     const stagger = 1200;
     const animPromises = CHECKS.map((c, i) =>
@@ -386,6 +413,7 @@ html{scroll-behavior:auto}
     // Wait for all animations
     for (let i = 0; i < CHECKS.length; i++) {
       await animPromises[i];
+      if (progressBar) progressBar.style.width = Math.round(((i + 1) / CHECKS.length) * 100) + '%';
       if (apiResult) {
         const c = CHECKS[i];
         const checkData = apiResult[c.key];
@@ -491,6 +519,19 @@ html{scroll-behavior:auto}
     hide($('#email-section'));
     $('#report-section').scrollIntoView({ behavior:'smooth', block:'start' });
   }
+
+  // Reset scan — expose globally for onclick
+  window.resetScan = function() {
+    hide($('#scan-section'));
+    hide($('#grade-section'));
+    hide($('#email-section'));
+    hide($('#report-section'));
+    $('#url-input').value = '';
+    $('#url-input').focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    apiResult = null;
+    scannedUrl = '';
+  };
 
   // URL form submit
   $('#url-form').addEventListener('submit', function(e) {
