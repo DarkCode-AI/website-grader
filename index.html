@@ -228,6 +228,13 @@ html{scroll-behavior:auto}
         <h3>Top Issues Costing You Customers</h3>
         <ul id="issues-list"></ul>
       </div>
+      <div id="share-buttons" style="display:none;margin-top:20px;text-align:center">
+        <p style="font-size:12px;color:var(--text-dim);margin-bottom:10px">Share your score</p>
+        <div style="display:flex;gap:10px;justify-content:center">
+          <a id="share-x" href="#" target="_blank" rel="noopener" style="padding:8px 16px;font-size:13px;font-weight:600;border-radius:6px;background:rgba(255,255,255,.06);color:var(--text-muted);text-decoration:none;transition:all .2s">Post on X</a>
+          <a id="share-linkedin" href="#" target="_blank" rel="noopener" style="padding:8px 16px;font-size:13px;font-weight:600;border-radius:6px;background:rgba(255,255,255,.06);color:var(--text-muted);text-decoration:none;transition:all .2s">Share on LinkedIn</a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -260,7 +267,7 @@ html{scroll-behavior:auto}
 
 <footer class="footer">
   <p><a href="https://darkcode-ai.github.io/roi-calculator/">Try our ROI Calculator too &rarr;</a></p>
-  <p>DarkCode AI &mdash; AI Automation for Small Businesses</p>
+  <p><a href="https://darkcode-ai.github.io/" style="color:var(--gold);font-weight:600">Powered by DarkCode AI</a> &mdash; AI Automation for Small Businesses</p>
   <p>Questions? <a href="mailto:darkcodeai@proton.me">darkcodeai@proton.me</a></p>
 </footer>
 
@@ -480,6 +487,19 @@ html{scroll-behavior:auto}
 
     show($('#grade-section'));
     show($('#email-section'));
+
+    // Show share buttons
+    const shareDiv = $('#share-buttons');
+    if (shareDiv) {
+      shareDiv.style.display = 'block';
+      const shareText = 'My website scored ' + computedScore + '/100 (Grade ' + computedGrade + ') on DarkCode AI\'s free grader. Check yours →';
+      const shareUrl = 'https://darkcode-ai.github.io/website-grader/';
+      const xLink = $('#share-x');
+      const liLink = $('#share-linkedin');
+      if (xLink) xLink.href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(shareUrl);
+      if (liLink) liLink.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl);
+    }
+
     $('#grade-section').scrollIntoView({ behavior:'smooth', block:'start' });
     $('#scan-btn').disabled = false;
   }
