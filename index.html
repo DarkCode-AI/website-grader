@@ -208,7 +208,7 @@ html{scroll-behavior:auto}
       <span>Analyzed 500+ small business websites across dental, HVAC, real estate, and legal</span>
     </div>
     <form id="url-form" class="input-group" role="form" aria-label="Website URL input">
-      <input type="text" id="url-input" inputmode="url" placeholder="yourwebsite.com" required aria-label="Website URL" autocomplete="url">
+      <input type="text" id="url-input" inputmode="url" placeholder="yourwebsite.com" aria-label="Website URL" autocomplete="off">
       <button type="submit" class="btn-gold" id="scan-btn" aria-label="Scan my website for free">Scan My Website Free</button>
     </form>
   </section>
@@ -610,14 +610,43 @@ html{scroll-behavior:auto}
     scannedUrl = '';
   };
 
-  // URL form submit
-  $('#url-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const raw = $('#url-input').value;
+  // URL form submit — handles both form submit and button click for mobile compatibility
+  function handleScan(e) {
+    if (e) e.preventDefault();
+    const raw = $('#url-input').value.trim();
     if (!raw) return;
     apiResult = null;
-    runScan(normalizeUrl(raw));
-  });
+    runScan(normalizeUrl(raw)).catch(function(err) {
+      show($('#error-msg'));
+    });
+  }
+
+  var urlForm = $('#url-form');
+  if (urlForm) {
+    urlForm.addEventListener('submit', handleScan);
+  }
+
+  // Fallback: direct click on scan button for mobile browsers that don't fire form submit
+  var scanBtn = $('#scan-btn');
+  if (scanBtn) {
+    scanBtn.addEventListener('click', function(e) {
+      // Only handle if the form submit didn't already fire
+      if (!scanBtn.disabled) {
+        handleScan(e);
+      }
+    });
+  }
+
+  // Also handle Enter key in the input
+  var urlInput = $('#url-input');
+  if (urlInput) {
+    urlInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleScan(e);
+      }
+    });
+  }
 
   // Email form submit
   $('#email-form').addEventListener('submit', async function(e) {
